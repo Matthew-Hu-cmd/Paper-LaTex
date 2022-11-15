@@ -14,7 +14,7 @@
 \usepackage{amssymb}
 \usepackage{subfigure}
 \usepackage{overpic}
-
+\usepackage{stfloats}
 \usepackage{enumitem}
 \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
 \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
@@ -54,7 +54,6 @@
 \setcounter{page}{1}
 
 \begin{document}
-% \begin{CJK*}{GBK}{song}
 
 \renewcommand{\figref}[1]{图\ref{#1}}
 \renewcommand{\tabref}[1]{表\ref{#1}}
@@ -62,7 +61,7 @@
 \renewcommand{\secref}[1]{第\ref{#1}节}
 \def\abstract{\centerline{\large\bf 摘要} \vspace*{12pt} \it}
 
-%%%%%%%%% TITLE 怎么在名字后面给星号啊？
+%%%%%%%%% TITLE 
 
 \title{伪装物体检测}
 
@@ -71,8 +70,24 @@
     $^{1}$ Inception Institute of Artificial Intelligence, UAE \quad$^{2}$College of CS, Nankai University, China\\
     \quad$^{3}$ School of Computer Science,Wuhan University, China \quad $^4$ETH Zurich, Switzerland 
 }
+%% A "teaser" image appears between the author and affiliation
+%% information and the body of the document, and typically spans the
+%% page.
+
+% \begin{teaserfigure} %会报错啊！！！不知道怎么用teaserfigure
+%   \includegraphics[width=\textwidth]{COD_Zh_translate/figures/examples.png}
+%   \caption{Seattle Mariners at Spring Training, 2010.}
+%   \Description{Enjoying the baseball game from the third-base
+%   seats. Ichiro Suzuki preparing to bat.}
+%   \label{fig:teaser}
+% \end{teaserfigure}
 \maketitle
 % \thispagestyle{empty}
+\begin{center}
+    \centering
+    \includegraphics{COD_Zh_translate/figures/examples.png}
+    \label{fig:什么鸟屎}
+\end{center}
 
 % 开头的图片，按照列排
 % \begin{figure*}[h!]
@@ -83,46 +98,46 @@
 %   }\label{fig:cmp1vAll}
 % \end{figure*}
 
-\begin{figure}[htbp]
-\centering
-\subfigure
-{
-    \begin{minipage}[b]{.2\textwidth}
-        \centering
-        \includegraphics[scale=0.25]{COD_Zh_translate/figures/example1.png}
-    \end{minipage}
-}
-\subfigure
-{
- 	\begin{minipage}[b]{.2\textwidth}
-        \centering
-        \includegraphics[scale=0.25]{COD_Zh_translate/figures/example2.png}
-    \end{minipage}
-}
-\subfigure
-{
- 	\begin{minipage}[b]{.2\textwidth}
-        \centering
-        \includegraphics[scale=0.25]{COD_Zh_translate/figures/example3.png}
-    \end{minipage}
-}
-\subfigure
-{
- 	\begin{minipage}[b]{.2\textwidth}
-        \centering
-        \includegraphics[scale=0.25]{COD_Zh_translate/figures/example4.png}
-    \end{minipage}
-}
+% \begin{figure*}[htbp]
+% \centering
 % \subfigure
 % {
-%  	\begin{minipage}[b]{.2\textwidth}
+%     \begin{minipage}[htbp]{.2\textwidth}
 %         \centering
-%         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example5.png}
+%         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example1.png}
 %     \end{minipage}
 % }
-\caption{COD10K 数据集示例图。你能找到隐藏在图片中的伪装物体吗?以彩色电子版阅览时视觉效果最佳。 答案见补充材料。}
-\label{fig:COD10K_examples}
-\end{figure}
+% \subfigure
+% {
+%  	\begin{minipage}[htbp]{.2\textwidth}
+%         \centering
+%         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example2.png}
+%     \end{minipage}
+% }
+% \subfigure
+% {
+%  	\begin{minipage}[htbp]{.2\textwidth}
+%         \centering
+%         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example3.png}
+%     \end{minipage}
+% }
+% \subfigure
+% {
+%  	\begin{minipage}[htbp]{.2\textwidth}
+%         \centering
+%         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example4.png}
+%     \end{minipage}
+% }
+% % \subfigure
+% % {
+% %  	\begin{minipage}[b]{.2\textwidth}
+% %         \centering
+% %         \includegraphics[scale=0.25]{COD_Zh_translate/figures/example5.png}
+% %     \end{minipage}
+% % }
+% \caption{COD10K 数据集示例图。你能找到隐藏在图片中的伪装物体吗?以彩色电子版阅览时视觉效果最佳。 答案见补充材料。}
+% \label{fig:COD10K_examples}
+% \end{figure*}
 
 % \begin{figure*}[h]
 %     \centering
