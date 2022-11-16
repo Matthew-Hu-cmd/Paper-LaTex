@@ -19,6 +19,7 @@
 \usepackage{enumitem}
 \usepackage[noend]{algpseudocode}   %
 \usepackage{setspace}   %
+\usepackage{multirow}   %
 \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
 \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
 \setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
@@ -183,6 +184,7 @@
 \subsection{通用物体和显著物体检测}
 \mypara{通用物体检测(Generic Object Detection, COD)} 通用物体检测是计算机视觉中最热门的方向之一 [11,31,38,56]。值得注意的是，通用物体既可以 是显著的也可以是伪装的;伪装物体可视为通用物 体中较难的特例(如图. 9中第二行和第三行)。典型 的 GOD 任务包括语义分割和全景分割(见\figref{fig:Comparsion_COD_SOD} b)。
 \mypara{显著物体检测(Salient Object Detection, SOD)}SOD 旨在识别图像中最引人注意的物体，然后对其 轮廓进行像素级分割 [29,39,73,78]。虽然“显著”一 词本质上与“伪装”相反(突出与浸入)，但是显著 物体也可以为伪装物体检测提供重要信息，即可以 把包含显著对象的图像作为伪装物体检测的负样本。
+%scalebox似乎是一种可行的压缩表格到目标大小的方法，但是似乎并不优雅，很多时候字体过小
 \begin{table}
     \scalebox{0.57}{
     \centering
@@ -346,6 +348,48 @@ $rf_{4}^{x1x2} $进一步输入到RF组件生成$rf_{4}^{s}$特征。如\figref{
 \subsection{实施细节}
 $SINet$是在 PyTorch中实现的，并使用Adam优化器进行训练[30]。在训练阶段，批处理大小为 36，学习率从1e-4开始。整个训练过程共有30个阶段(采用提前停止策略)，仅耗时大约70分钟。运行时间是在以下平台上测试获得:Intel® i9-9820X CPU @3.30GHz × 20、TITAN RTX。分辨率为 352×352 的图像，其推理时间为 0.2s。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%大的表格自适应调整这么弄就对了
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}[]
+\resizebox{\textwidth}{!}
+    {
+        \begin{tabular}{l|llll||llll||llll}
+        \hline
+        \multicolumn{1}{c|}{\multirow{2}{*}{基准模型}} &
+          \multicolumn{4}{c||}{CHAMELEON {[}57{]}} &
+          \multicolumn{4}{c||}{CAMO-Test {[}33{]}} &
+          \multicolumn{4}{c}{COD10K-Test   (Ours)} \\ \cline{2-13} 
+        \multicolumn{1}{c|}{} &
+          \multicolumn{1}{c}{$S_{\alpha } \uparrow$ } &
+          \multicolumn{1}{c}{$E_{\phi } \uparrow$ } &
+          \multicolumn{1}{c}{$F_{\beta }^{\omega } \uparrow $} &
+          \multicolumn{1}{c||}{$M\downarrow $} &
+          \multicolumn{1}{c}{$S_{\alpha } \uparrow$} &
+          \multicolumn{1}{c}{$E_{\phi } \uparrow$} &
+          \multicolumn{1}{c}{$F_{\beta }^{\omega } \uparrow $} &
+          \multicolumn{1}{c||}{$M\downarrow $} &
+          \multicolumn{1}{c}{$S_{\alpha } \uparrow$} &
+          \multicolumn{1}{c}{$E_{\phi } \uparrow$} &
+          \multicolumn{1}{c}{$F_{\beta }^{\omega } \uparrow $} &
+          \multicolumn{1}{c}{$M\downarrow $} \\ \hline
+        2017 FPN {[}36{]}               & 0.794 & 0.783 & 0.591 & 0.075 & 0.794 & 0.783 & 0.591 & 0.075 & 0.794 & 0.783 & 0.591 & 0.075 \\
+        2017 MaskRCNN {[}24{]}          &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2017 PSPNet {[}76{]}            &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2018 UNet++ {[}83{]}            &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2018 PiCANet {[}41{]}           &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 MSRCNN {[}28{]}            &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 BASNet {[}52{]}            &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 PFANet {[}79{]}            &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 CPD {[}69{]}               &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 HTC {[}3{]}                &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 EGNet {[}78{]}             &       &       &       &       &       &       &       &       &       &       &       &       \\
+        2019 ANet-SRM {[}33{]}          &       &       &       &       &       &       &       &       &       &       &       &       \\ \hline
+        SINet’20 Training setting (i)   &       &       &       &       &       &       &       &       &       &       &       &       \\
+        SINet’20 Training setting (ii)  &       &       &       &       &       &       &       &       &       &       &       &       \\
+        SINet’20 Training setting (iii) &       &       &       &       &       &       &       &       &       &       &       &       \\ \hline
+        \end{tabular}
+    }
+\end{table*}
 \section{评测实验}\label{sec:Experiment}
 \subsection{实验设置}
 \mypara{训练和测试细节}
@@ -361,10 +405,11 @@ $SINet$是在 PyTorch中实现的，并使用Adam优化器进行训练[30]。在
 
 表. 4 提供了在跨数据集上使用 S 测评法 (S-
 measure) 的结果。每行数据表示用这一行的数据集 训练，再对各个列中的数据集进行测试。因此，从行 的角度看，可以得知该行数据集的泛化性。每列数据 表示在对应行数据集上进行训练后，再对列上数据 集上进行测试，因此，从列的角度分析，可知该列数 据集的难度。请注意，训练和测试的设置与表. 3中 使用的设置不同。因此性能无法相互比较。正如预 期，本文的 COD10K 是难度最大的数据集 (即，最 后一行的其他平均为: 0.589)。这是因为数据集包 含了各种具有挑战性的伪装物体 (见\equref{equ:PDC_refresh})。
-
+\mypara{定性分析}图. 9给出了本文$SINet$模型与两个基准模型之间的定性比较。观察发现，PFANet[79]虽然 定位到伪装物体，但是输出总是不准确。通过进一步使用边缘特征，EGNet[78]获得了比PFANet相对更准确的定位。然而，它仍然忽略了物体的细微之处，尤其是第一行的鱼类。所有这些具有挑战的示例 (例如，边缘不确定，遮挡和小物体)，SINet 模 型均可检测出伪装物体的精确细节从而预测出真正 伪装物体，展示了本文框架的稳健性。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{潜在应用}\label{sec:Application_to_be_found}
 
-\section{总结与展望}\label{sec:Conclusion}
+\section{结论}\label{sec:Conclusion}
 
 
 
