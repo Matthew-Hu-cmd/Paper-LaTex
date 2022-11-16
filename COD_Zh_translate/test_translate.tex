@@ -315,13 +315,52 @@ $rf_{4}^{x1x2} $进一步输入到RF组件生成$rf_{4}^{s}$特征。如\figref{
 \subsection{识别模块(Identification Module, IM)}
 通过之前的搜索模块获取到侯选特征后，在识 别模块中，需要对伪装物体进行精确检测。本文采用密集连接方式对部分解码组件 (Partial Decoder Component，PDC) [69] 进行了扩展。具体来讲，PDC 整合了来自 SM 的四个特征层。可通过以下公式来 计算粗糙的伪装图$C_{s}$:
 \begin{equation}\label{equ:Partial_Decoder_Component}
-   C_{s} =PD_{s} \left ( rf_{1}^{s}, rf_{2}^{s}, rf_{3}^{s}, rf_{4}^{s}, \right ) ,
+   C_{s} =PD_{s} \left ( rf_{1}^{s}, rf_{2}^{s}, rf_{3}^{s}, rf_{4}^{s}\right),
 \end{equation}
-其中$\left\{rf_{k}^{s}=r_{k},k=1,2,3,4\right\}$。现有文献[41,69]已表明，注意力机制可以有效地消除无关特征的干扰。因此引入搜索注意力 (Search Attention，SA) 模块 来增强中间特征层 X2 并获得增强的伪装图 Ch:
+其中$\left\{rf_{k}^{s}=r_{k},k=1,2,3,4\right\}$。现有文献[41,69]已表明，注意力机制可以有效地消除无关特征的干扰。因此引入搜索注意力 (Search Attention，SA) 模块 来增强中间特征层$\chi_{2}$并获得增强的伪装图$C_{h}$:
+\begin{equation}\label{equ:Search_Attention}
+   C_{h} = f_{max}\left ( g(\chi_{2}, \sigma, \lambda), C_{s} \right ),
+\end{equation}
+其中$g\left ( \cdot \right ) $是SA函数，即为典型的归一化后的高斯滤波器，其标准差为:$\sigma = 32 $核尺寸为:$ \lambda = 4$，$f_{max}\left ( \cdot \right )$是一个最大化函数，用来突出伪装图$C_{s}$初始的伪装区域。
+
+
+为了全面获取高层特征，本文进一步使用 PDC 来聚合另外三层的特征，并通过 RF 进行增强，以获得最终的伪装图$C_{i}$:
+\begin{equation}\label{equ:RF_Partial_Decoder_Component}
+   C_{i} = PD_{i} \left ( rf_{1}^{i}, rf_{2}^{i}, rf_{3}^{i} \right),
+\end{equation}
+其中$\left \{ rf_{k}^{i} = rf_{k},k=1,2,3 \right \}$。$PD_{s}$和$PD_{i}$之间的
+差别是输入特征的数量不同。
+\mypara{部分解码组件(Partial Decoder Component,PDC)}
+形式上，给定一组来自搜索和识别阶段获取的特征$\left \{ rf_{k}^{c} , k\in \left [ m,...,M \right ]   ,C \in \left [ s,i \right ] \right \} $本文使用上下文模块来生成新特征$\left \{ rf_{k}^{c1} \right \} $。并采用逐元素相
+乘方式来减少相邻特征之间的差距。具体来说，对于最浅层的特征，如$rf_{4}^{s}$，当$k=M$时，令$rf_{M}^{c1}=rf_{M}^{c2}$，当$K<M$时，则将$rf_{k}^{c2}$更新为：
+\begin{equation}\label{equ:PDC_refresh}
+   rf_{k}^{c2} =rf_{k}^{c1} \otimes  {\textstyle \prod_{j=k+1}^{M}}Bconv\left ( UP\left ( f_{j}^{c1}  \right )  \right )  ,
+\end{equation}
+其中$k\in \left [ m,...,M−1 \right ],Bconv(\cdot) $ 是结合了 3×3 卷 积、批量归一化和 ReLU 函数的顺序操作。$UP(\cdot) $为具有$2j−k$倍的上采样操作。最后，通过拼接方式将 这些具有区分性的特征组合在一起。训练$SINet$模 型损失函数为交叉熵[78]损失函数$L_{CE}$ 。总损失函数$L$为:
+\begin{equation}\label{equ:L_CE_loss}
+   L=L_{CE}^{s}\left ( C_{csm},G \right )  +L_{CE}^{i} \left ( C_{cim},G \right ) ,
+\end{equation}
+其中$C_{csm}$和$C_{cim}$是对$C_{s}$和$C_{i}$上采样后获得的两个伪装物体映射图，其分辨率为：352×352。
+
+
+\subsection{实施细节}
+$SINet$是在 PyTorch中实现的，并使用Adam优化器进行训练[30]。在训练阶段，批处理大小为 36，学习率从1e-4开始。整个训练过程共有30个阶段(采用提前停止策略)，仅耗时大约70分钟。运行时间是在以下平台上测试获得:Intel® i9-9820X CPU @3.30GHz × 20、TITAN RTX。分辨率为 352×352 的图像，其推理时间为 0.2s。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{实验比较}\label{sec:Experiment}
+\section{评测实验}\label{sec:Experiment}
+\subsection{实验设置}
+\mypara{训练和测试细节}
+为了验证$SINet$的通用性，使用以下三种训练集(伪装图像):\textbf{(i)}CAMO [33];\textbf{(ii)} COD10K;\textbf{(iii)}CAMO + COD10K + EXTRA。对于 CAMO，则使用默认的训练集。同样对于COD10K，也使用默认的伪装图像训练集。本文在以下数据集 上进行模型评估:整个 CHAMELEON [57] 数据集，CAMO和COD10K 两个数据集对应的测试集。\mypara{基线}由于没有公开的基于深度网络的 COD 模型。因此，本文根据以下标准选择了 12 个深度学习的基 准模型 [3, 24, 28, 33, 36, 41, 52, 69, 76, 78, 79, 83] 并按 照第 iv 个训练方案，使用原文推荐的参数来训练这 些基准模型。(1) 经典框架，(2) 最新发布，(3) 在特 定领域 (例如 GOD 或 SOD) 中达到 SOTA 性能。
+\subsection{结果与数据分析}
+\mypara{CHAMELEON 性能表现}从表. 3中可以看出，相比12个SOTA的物体检测基准，本文提出的 SINet 在所有指标上均获胜。尤其是本文模型并未使用任何边缘/边界特征(如EGNet[78]，PFANet [79] )、预处理技术 [47] 或后处理策略 (如 CRF [32]，图 割模型 [2])。
+\mypara{CAMO 性能表现}本文还在最近提出的CAMO[33]数据集上进行了模型测试，它包括了各种伪装物 体。根据表. 3中全面的分析，不难发现CAMO数据集比之前的两个数据集 (CHAMELEON，CPD1K) 更具挑战性。$SINet$再次获得最佳表现，因此进一步证明了它的鲁棒性。
+\mypara{COD10K 性能表现}使用 COD10K 的测试集 (2,026 张图像) 进行测试，可以再次发现 $SINet$一如既往地优于其他模型。这是因为其专门设计的搜索和识别模块可以自动学到丰富的高、中、低层的 特征，而这些正是解决伪装物体边缘难以确定的这 一具有挑战性问题的关键 (见 图. 9)。
+\mypara{GOD 与 SOD 的基准模型}值得注意，在排名 前三的模型中，GOD 模型 (FPN [36]) 比 SOD的CPD[69]和EG-Net[78]表现差，这说明SOD框架可能更适合扩展到COD任务上。不论与 GOD [3, 24, 28, 36, 76, 83] 模型还是 SOD [39, 41, 52, 69, 78, 79]
+模型相比，$SINet$明显缩短了训练时间 (例如，$SINet$: 耗 1小时而$EGNet$需要耗费48 小时)，并且在所有数据集上都达到了SOTA性能，这表明本模型有希望解决COD问题。
+\mypara{数据集间的泛化性}数据集的泛化性和难度在训练 和评估不同算法 [62] 中都起着至关重要的作用。因 此，本文使用跨数据集分析法 [60]，对现有 COD 数 据集进行研究，即在一个数据集上训练模型，然后在其他数据集上进行测试。本文选择了两个数据集，包括 CAMO[33]和本文构建的$COD10K$数据集。参考[62]，本文也对于每个数据集，随机选择 800张图像作为训练集，选择200张图像作为测试集，因为$CPD1K$数据集仅包含 1,000 张图像。为公平比较，$SINet$模型在每个数据集上都训练到损失稳定为止。
 
 
+表. 4 提供了在跨数据集上使用 S 测评法 (S-
+measure) 的结果。每行数据表示用这一行的数据集 训练，再对各个列中的数据集进行测试。因此，从行 的角度看，可以得知该行数据集的泛化性。每列数据 表示在对应行数据集上进行训练后，再对列上数据 集上进行测试，因此，从列的角度分析，可知该列数 据集的难度。请注意，训练和测试的设置与表. 3中 使用的设置不同。因此性能无法相互比较。正如预 期，本文的 COD10K 是难度最大的数据集 (即，最 后一行的其他平均为: 0.589)。这是因为数据集包 含了各种具有挑战性的伪装物体 (见\equref{equ:PDC_refresh})。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
