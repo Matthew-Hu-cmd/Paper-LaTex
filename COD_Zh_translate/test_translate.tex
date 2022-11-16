@@ -20,6 +20,8 @@
 \usepackage[noend]{algpseudocode}   %
 \usepackage{setspace}   %
 \usepackage{multirow}   %
+\usepackage{diagbox}    %
+\usepackage{booktabs}   %
 \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
 \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
 \setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
@@ -184,9 +186,23 @@
 \subsection{通用物体和显著物体检测}
 \mypara{通用物体检测(Generic Object Detection, COD)} 通用物体检测是计算机视觉中最热门的方向之一 [11,31,38,56]。值得注意的是，通用物体既可以 是显著的也可以是伪装的;伪装物体可视为通用物 体中较难的特例(如图. 9中第二行和第三行)。典型 的 GOD 任务包括语义分割和全景分割(见\figref{fig:Comparsion_COD_SOD} b)。
 \mypara{显著物体检测(Salient Object Detection, SOD)}SOD 旨在识别图像中最引人注意的物体，然后对其 轮廓进行像素级分割 [29,39,73,78]。虽然“显著”一 词本质上与“伪装”相反(突出与浸入)，但是显著 物体也可以为伪装物体检测提供重要信息，即可以 把包含显著对象的图像作为伪装物体检测的负样本。
-%scalebox似乎是一种可行的压缩表格到目标大小的方法，但是似乎并不优雅，很多时候字体过小
+%scalebox似乎是一种可行的压缩表格到目标大小的方法，但是似乎并不优雅，很多时候字体过小,用resizebox更加优雅
+% \begin{table}
+%     \scalebox{0.57}{
+%     \centering
+%     \begin{tabular}{c|ccc|ccccccc}
+% \hline
+% 数据集 & 年份 & 数量 & 类 & Att. & Bbox. & MI. & Ins. & Cate. & Spi. & Obj. \\ \hline
+% CHAMELEON{[}57{]} & 2018 & 76   & -  &      &       &     &      &       &      & \checkmark    \\
+% CAMO{[}33{]}      & 2019 & 2.5k & 8  & \checkmark    &       &     &      &       & \checkmark    & \checkmark    \\ \hline
+% COD10K(Ours)      & 2020 & 10k  & 78 & \checkmark    & \checkmark     & \checkmark   & \checkmark    & \checkmark     & \checkmark    & \checkmark    \\ \hline
+% \end{tabular}
+%     }
+%     \caption{从 COD 数据集对比信息来看，COD10K 数据集提 供了更丰富的注释标签。数量(Img.):图片数。类(Cls.): 类别。Att.:属性。BBox.;包围盒。Ml.:抠图 [74] 级标注
+% (图. 7)。Ins.:实例级标签。Cate.:类别标签。Spi.:显式拆 分训练集与测试集。Obj.:物体。}\label{tab:COD_Dataset}
+% \end{table}
 \begin{table}
-    \scalebox{0.57}{
+    \resizebox{\columnwidth}{!}{
     \centering
     \begin{tabular}{c|ccc|ccccccc}
 \hline
@@ -218,7 +234,7 @@ COD10K(Ours)      & 2020 & 10k  & 78 & \checkmark    & \checkmark     & \checkma
 \mypara{COD定义} 和类别相关的语义分割任务不同，COD 任务与类别无关。因此，COD 任务简单且容易定义。 输入一张图像，通过伪装物体检测方法，为每个像 素i分配置信度pi ∈[0,1]，其中pi 表示像素i的 概率值。0 表示此像素不属于伪装物体，而 1 则表 示完全属于伪装物体。本文主要研究对象级的 COD 任务，实例级 COD 作为未来的工作。
 \mypara{评估指标}平均绝对误差(Mean absolute error， MAE)已被广泛用于 SOD 任务。和 Perazzi 等 人 [50] 一样，本文也使用了平均绝对误差 M 指 标(MAE(M))来评估预测图像 C 和真值图像G之间的像素级精度。尽管 MAE 指标能有效地评估错 误的出现和数量，但它不能评估错误出现的位置。最 近，范等人提出了一种基于人类视觉感知机制的增 强-匹配评价指标(E-measure，Eφ )[13]，它同时考虑了像素级信息的匹配和图像级信息的统计。该评价 指标显然适用于评估伪装物体检测结果的整体和局 部精度。由于伪装物体通常包含复杂的形状，COD 还需要一个可以判断结构相似性的评价指标，因此 本文引入了 S 测评法(S-measure，Sα)[12]。最新 研究 [12,13] 表明，加权的 F 测评法(F-measure， Fβw )[44] 比传统的 Fβ 评测法更可靠。因此，本文 也在 COD 领域中使用这一评估指标。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{文本数据集}\label{sec:HC}
+\section{文本数据集}\label{sec:Our_Dataset}
 新任务和数据集 [7,11,37,48,82] 的出现促进了 计算机视觉各个领域的快速发展。例如，ImageNet [53] 数据集的出现使得深度模型在视觉识别任务上 成为了可能。本文构建 COD 数据集的初衷与之相 似，是为了:(1) 提供一项新的具有挑战性的任务， (2) 促进对新主题的研究，(3) 激发新想法。\figref{fig:COD10K_examples}、\figref{fig:COD10K_features}以及\figref{fig:Catagory_COD10k} (e)为 COD10K 的示例。接下来， 本文从以下三个方面详细阐述 COD10K 数据集。
 \subsection{图像收集}
 根据 [18,51] 的研究，数据集的标注质量和规 模决定了基准数据集的时间长短。为了延长其寿命， COD10K 数据集包含 10,000 张图像(5,066 张伪装 图像，3,000张背景图像，1,934张无伪装的图像)，包含 10 个超类和 78 个子类(69 个伪装类，9 个非 伪装类)，这些图像来源于多个摄影学网站。
@@ -228,11 +244,11 @@ COD10K(Ours)      & 2020 & 10k  & 78 & \checkmark    & \checkmark     & \checkma
     \centering
     \includegraphics[width=0.98\columnwidth]{COD_Zh_translate/figures/Inter_relation_COD10k.png}\small
     \caption{COD10K 左图:COD10K 数据集的共生属性分布。网格中的数字为图像总数。右图:属性间的相互依赖关系。弧长越长则两属性间的相关性就越高。}
-    \label{fig:Catagory_COD10k}
+    \label{fig:inter_connection_COD10k}
 \end{figure}
 
 \begin{table}
-    \scalebox{0.78}{
+    \resizebox{\columnwidth}{!}{
     \centering
     \begin{tabular}{cl}
         \hline
@@ -251,9 +267,9 @@ COD10K(Ours)      & 2020 & 10k  & 78 & \checkmark    & \checkmark     & \checkma
 \subsection{专业标注}
 最新公布的数据集 [10, 16, 17] 表明，在创建大 规模数据集时，建立分类系统至关重要。受 [46] 启 发，本文进行了分层标注(采用众包方式标注)(类别$\longrightarrow$包围盒$\longrightarrow$属性$\longrightarrow$对象/实例)。
 \begin{itemize}
-    \item  \textbf{类别.}如图. 4(a)所示，首先创建五个超类。 然后从收集到的数据中归纳了 69 个最常见的子类。 最后，标注每个图像的子类和超类。如果候选图像 不属于任何已有类别，则将其归为“其他”类。
+    \item  \textbf{类别.}如\figref{fig:Catagory_COD10k}(a)所示，首先创建五个超类。 然后从收集到的数据中归纳了 69 个最常见的子类。 最后，标注每个图像的子类和超类。如果候选图像 不属于任何已有类别，则将其归为“其他”类。
     \item \textbf{包围盒.} 为了将COD10K数据集扩展到伪装物采样(proposal)任务，本文还细致地为每张图像 标注包围盒。
-    \item \textbf{属性. }与文献 [18,51] 保持一致，本文采用自 然场景中常见的极具挑战的属性 (如遮挡、边缘不确 定)，来标注每张图像。表. 2提供了属性描述，\figref{fig:Catagory_COD10k}展示了共生属性分布情况。
+    \item \textbf{属性. }与文献 [18,51] 保持一致，本文采用自 然场景中常见的极具挑战的属性 (如遮挡、边缘不确 定)，来标注每张图像。表. 2提供了属性描述，\figref{fig:inter_connection_COD10k}展示了共生属性分布情况。
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%这块的三个图是非常值得玩味的
 %第一张图因为放在subsection3.3上面，不形成破坏，直接使用[tp]就上去了
@@ -285,22 +301,22 @@ COD10K(Ours)      & 2020 & 10k  & 78 & \checkmark    & \checkmark     & \checkma
 
 \subsection{数据集特点与统计信息}
 \begin{itemize}
-    \item \textbf{物体大小. }根据 [18] 的研究，在图. 6(左上 角)中绘制了归一化的物体尺寸，分布从 0.01\%到 80.74\%(平均:8.94\%)。与 CAMO-COCO、CPD1K 和 CHAMELEON 相比，本文数据集具有更广的尺寸范围。
-    \item \textbf{全局/局部对比度.} 为了考察物体是否容易检 测，本文使用全局与局部比值评估方法 [35]。图. 6(右 上角) 表明了 COD10K 数据集比其他数据集更具挑 战性。
-    \item \textbf{中心偏见.} 由于人类会自然地将注意力集中在场景中心，因此摄影时就会产生这样的偏见。本 文采用 [18] 中的策略来分析这种偏见。图. 6(底部) 表明了本文数据集受到的中心偏见的影响更小。
+    \item \textbf{物体大小. }根据 [18] 的研究，在\figref{fig:Graph_analyse_COD10k}(左上 角)中绘制了归一化的物体尺寸，分布从 0.01\%到 80.74\%(平均:8.94\%)。与 CAMO-COCO、CPD1K 和 CHAMELEON 相比，本文数据集具有更广的尺寸范围。
+    \item \textbf{全局/局部对比度.} 为了考察物体是否容易检 测，本文使用全局与局部比值评估方法 [35]。\figref{fig:Graph_analyse_COD10k}(右上角) 表明了 COD10K 数据集比其他数据集更具挑 战性。
+    \item \textbf{中心偏见.} 由于人类会自然地将注意力集中在场景中心，因此摄影时就会产生这样的偏见。本 文采用 [18] 中的策略来分析这种偏见。\figref{fig:Graph_analyse_COD10k}(底部) 表明了本文数据集受到的中心偏见的影响更小。
     \item \textbf{质量控制. }为了确保高质量的标注，标记过程 邀请了三位观察者参与，并进行 10 组的交叉验证。 图. 7展示了通过和拒绝的标注示例。每张图像的实 例级标注平均耗时 60 分钟。
-    \item \textbf{超类和子类的分布. }COD10K 包括 5 个超类 (陆地生物、空中生物、水生生物、两栖动物以及其 他类)和 69 个子类(例如:蝙蝠鱼, 狮子, 蝙蝠, 青 蛙等)，各类别的词云和对象/实例数量的示例分别显示在图. 4 c 和 d 中。
+    \item \textbf{超类和子类的分布. }COD10K 包括 5 个超类 (陆地生物、空中生物、水生生物、两栖动物以及其 他类)和 69 个子类(例如:蝙蝠鱼, 狮子, 蝙蝠, 青 蛙等)，各类别的词云和对象/实例数量的示例分别显示在\figref{fig:Catagory_COD10k} c 和 d 中。
     \item \textbf{分辨率分布. }[71] 研究表明，高分辨率图像可
-以为模型训练提供更多物体边缘的细节从而在测试 时获得更好的性能。图. 4 (b)展示了 COD10K 数 据集图像分辨率的分布情况，它含有大量的 1080p 全高清图像。
+以为模型训练提供更多物体边缘的细节从而在测试 时获得更好的性能。\figref{fig:Catagory_COD10k} (b)展示了 COD10K 数 据集图像分辨率的分布情况，它含有大量的 1080p 全高清图像。
     \item \textbf{数据集划分. }为了给深度学习模型提供大量 的训练数据，本文将 COD10K 数据集划分为:6,000 张图像的训练集和 4,000 张图像的测试集，图像分 别从每个子类中随机选择。
 \end{itemize}
 
 \section{本文框架}
 \mypara{动机}生物学的研究 [23] 表明，捕食者在狩猎时，首 先会判断是否存在潜在猎物，即搜索猎物;然后，目 标动物被识别;最后，动物被捕获。
-\mypara{概述}本文的 SINet 框架受到狩猎过程的前两阶段 的启发。框架主要包括两个模块:搜索模块 (Search Module, SM) 和识别模块 (Identification Module, IM)。前者 (§ 4.1) 负责搜索被伪装的物体，而后者 (§ 4.2) 则用于精确检测物体。
+\mypara{概述}本文的 SINet 框架受到狩猎过程的前两阶段 的启发。框架主要包括两个模块:搜索模块 (Search Module, SM) 和识别模块 (Identification Module, IM)。前者 (\secref{sec:search_module}) 负责搜索被伪装的物体，而后者 (\secref{sec:identification_module}) 则用于精确检测物体。
 
 
-\subsection{搜索模块(Search Module，SM)}
+\subsection{搜索模块(Search Module，SM)}\label{sec:search_module}
 神经科学实验已证实，在人类视觉系统中，一组多尺度的群感受野(population Receptive Fields，pRFs)有助于让靠近视网膜中央凹的区域更加显著，而该区域对小的空间位移非常敏感[42]。于是，本文在搜索阶段(通常是在较小的、局部空间中)使用 RF [42,69] 模块来整合更具鉴别性的特征表5示。具 体而言，对于输入图像 
 $\mathbf{I} \in \mathbb{R}^{W\times H\times3 }$ %%%行内公式的插入方式%%
 ，可利用 ResNet-50[25] 模型提取出一组特征
@@ -314,7 +330,7 @@ $\left \{ \chi_{0},\chi_{1} \right \} $，然后将分辨率下采样为原始�
 $rf_{4}^{x1x2} $进一步输入到RF组件生成$rf_{4}^{s}$特征。如\figref{fig:SINet_Struct}所示，在组合了三个层次的特征之后，得到了一组增强的特征$\left\{rf_{k}^{s},k=1,2,3,4\right\}$，用于鲁棒地学习伪装线索。\textbf{感受野(Receptive Field, RF). }RF模块包括五个分支$\left \{ b_{k} , k=1,...,5 \right \}$。在每个分支中，第一个 卷积层 (Bconv) 的尺寸为$1\times1$，用以将通道数降为32。其后两层分别为:$(2k-1)\times(2k-1)$Bconv层和3×3Bconv层。当k>2时，空洞卷积率设置为$(2k − 1)$。前四个分支串联后，通过 1 × 1 Bconv 操 作，其通道数降为 32。最后，加入第 5 个分支，并 整体输入进 ReLU 函数以获得特征$rf_{k}$。
 
 
-\subsection{识别模块(Identification Module, IM)}
+\subsection{识别模块(Identification Module, IM)}\label{sec:identification_module}
 通过之前的搜索模块获取到侯选特征后，在识 别模块中，需要对伪装物体进行精确检测。本文采用密集连接方式对部分解码组件 (Partial Decoder Component，PDC) [69] 进行了扩展。具体来讲，PDC 整合了来自 SM 的四个特征层。可通过以下公式来 计算粗糙的伪装图$C_{s}$:
 \begin{equation}\label{equ:Partial_Decoder_Component}
    C_{s} =PD_{s} \left ( rf_{1}^{s}, rf_{2}^{s}, rf_{3}^{s}, rf_{4}^{s}\right),
@@ -350,7 +366,7 @@ $SINet$是在 PyTorch中实现的，并使用Adam优化器进行训练[30]。在
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %大的表格自适应调整这么弄就对了
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table*}[]
+\begin{table*}[pb]
 \resizebox{\textwidth}{!}
     {
         \begin{tabular}{l|llll||llll||llll}
@@ -389,28 +405,89 @@ $SINet$是在 PyTorch中实现的，并使用Adam优化器进行训练[30]。在
         SINet’20 Training setting (iii) &       &       &       &       &       &       &       &       &       &       &       &       \\ \hline
         \end{tabular}
     }
+    \caption{各数据集上的定量评估结果。最高分以粗体突出。训练设置见\secref{sec:Experiment_settings}:(i) CAMO, (ii) COD10K, (iii) CAMO + COD10K + EXTRA. 注意，ANet-SRM模型码 (仅在 CAMO 上训练) 没有开源代，因此，因此其他数据集的结果无法得知(‘‡’)。$\uparrow$表示评分越高越好。$E_{\phi }$表示E测评法[13]的均值. 基准模型使用第 (iv) 集合进行训练。评测代码详见: https://github.com/DengPingFan/CODToolbox}
+    \label{tab:results}
 \end{table*}
 \section{评测实验}\label{sec:Experiment}
-\subsection{实验设置}
+\subsection{实验设置}\label{sec:Experiment_settings}
 \mypara{训练和测试细节}
 为了验证$SINet$的通用性，使用以下三种训练集(伪装图像):\textbf{(i)}CAMO [33];\textbf{(ii)} COD10K;\textbf{(iii)}CAMO + COD10K + EXTRA。对于 CAMO，则使用默认的训练集。同样对于COD10K，也使用默认的伪装图像训练集。本文在以下数据集 上进行模型评估:整个 CHAMELEON [57] 数据集，CAMO和COD10K 两个数据集对应的测试集。\mypara{基线}由于没有公开的基于深度网络的 COD 模型。因此，本文根据以下标准选择了 12 个深度学习的基 准模型 [3, 24, 28, 33, 36, 41, 52, 69, 76, 78, 79, 83] 并按 照第 iv 个训练方案，使用原文推荐的参数来训练这 些基准模型。(1) 经典框架，(2) 最新发布，(3) 在特 定领域 (例如 GOD 或 SOD) 中达到 SOTA 性能。
+\begin{table}[pt]
+    \resizebox{\columnwidth}{!}
+    {
+    \centering
+    \begin{tabular}{r|ll|ll|l} 
+    \toprule
+    \multicolumn{1}{l|}{\diagbox{训练：}{测试：}} & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}CAMO\\{[}33]\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}COD10K\\(Ours)\end{tabular}} & \multicolumn{1}{c}{~ 自身~~} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}~ 其他~~\\~ 均值~~\end{tabular}} & \multicolumn{1}{c}{~ 下降$\downarrow$}  \\ 
+    \hline
+    CAMO [33]   & \textbf{0.803}    & 0.702         & 0.803 & 0.678 & 15.6\%    \\
+    COD10K (Ours)  & 0.742          & 0.7\textbf{00}& 0.700 & 0.683 & 2.40\%    \\ \hline
+    其他均值    & 0.641             & 0.589         &       &       &           \\
+    \bottomrule
+    \end{tabular}
+    }
+    \caption{$SINet$模型在跨数据集下得到的 S 测评法 (S-measure$\uparrow$[12]) 结果。$SINet$ 在某一行上的对应数据集上进 行训练，然后分别在列上的所有数据集上进行测试。“自身 (Self)”:表示训练和测试都在同一个(对角线上)数据集上 进行。“其他均值 (Mean others)”表示在其他数据集上的平 均分数。}\label{tab:S_measure_result}
+\end{table}
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{COD_Zh_translate/figures/Comparesion_SINet_EGNet_PFANet.png}\small
+    \caption{SINet 和两个在 COD10K 数据集上表现最好的基准模型的定性分析。细节详 补充材料。}
+    \label{fig:Comparesion_SINet_EGNet_PFANet}
+\end{figure*}
+
 \subsection{结果与数据分析}
-\mypara{CHAMELEON 性能表现}从表. 3中可以看出，相比12个SOTA的物体检测基准，本文提出的 SINet 在所有指标上均获胜。尤其是本文模型并未使用任何边缘/边界特征(如EGNet[78]，PFANet [79] )、预处理技术 [47] 或后处理策略 (如 CRF [32]，图 割模型 [2])。
-\mypara{CAMO 性能表现}本文还在最近提出的CAMO[33]数据集上进行了模型测试，它包括了各种伪装物 体。根据表. 3中全面的分析，不难发现CAMO数据集比之前的两个数据集 (CHAMELEON，CPD1K) 更具挑战性。$SINet$再次获得最佳表现，因此进一步证明了它的鲁棒性。
-\mypara{COD10K 性能表现}使用 COD10K 的测试集 (2,026 张图像) 进行测试，可以再次发现 $SINet$一如既往地优于其他模型。这是因为其专门设计的搜索和识别模块可以自动学到丰富的高、中、低层的 特征，而这些正是解决伪装物体边缘难以确定的这 一具有挑战性问题的关键 (见 图. 9)。
+\mypara{CHAMELEON 性能表现}从\tabref{tab:results}中可以看出，相比12个SOTA的物体检测基准，本文提出的 SINet 在所有指标上均获胜。尤其是本文模型并未使用任何边缘/边界特征(如EGNet[78]，PFANet [79] )、预处理技术 [47] 或后处理策略 (如 CRF [32]，图 割模型 [2])。
+\mypara{CAMO 性能表现}本文还在最近提出的CAMO[33]数据集上进行了模型测试，它包括了各种伪装物 体。根据\tabref{tab:results}中全面的分析，不难发现CAMO数据集比之前的两个数据集 (CHAMELEON，CPD1K) 更具挑战性。$SINet$再次获得最佳表现，因此进一步证明了它的鲁棒性。
+\mypara{COD10K 性能表现}使用 COD10K 的测试集 (2,026 张图像) 进行测试，可以再次发现 $SINet$一如既往地优于其他模型。这是因为其专门设计的搜索和识别模块可以自动学到丰富的高、中、低层的 特征，而这些正是解决伪装物体边缘难以确定的这 一具有挑战性问题的关键 (见\figref{fig:Comparesion_SINet_EGNet_PFANet})。
 \mypara{GOD 与 SOD 的基准模型}值得注意，在排名 前三的模型中，GOD 模型 (FPN [36]) 比 SOD的CPD[69]和EG-Net[78]表现差，这说明SOD框架可能更适合扩展到COD任务上。不论与 GOD [3, 24, 28, 36, 76, 83] 模型还是 SOD [39, 41, 52, 69, 78, 79]
 模型相比，$SINet$明显缩短了训练时间 (例如，$SINet$: 耗 1小时而$EGNet$需要耗费48 小时)，并且在所有数据集上都达到了SOTA性能，这表明本模型有希望解决COD问题。
 \mypara{数据集间的泛化性}数据集的泛化性和难度在训练 和评估不同算法 [62] 中都起着至关重要的作用。因 此，本文使用跨数据集分析法 [60]，对现有 COD 数 据集进行研究，即在一个数据集上训练模型，然后在其他数据集上进行测试。本文选择了两个数据集，包括 CAMO[33]和本文构建的$COD10K$数据集。参考[62]，本文也对于每个数据集，随机选择 800张图像作为训练集，选择200张图像作为测试集，因为$CPD1K$数据集仅包含 1,000 张图像。为公平比较，$SINet$模型在每个数据集上都训练到损失稳定为止。
 
 
-表. 4 提供了在跨数据集上使用 S 测评法 (S-
-measure) 的结果。每行数据表示用这一行的数据集 训练，再对各个列中的数据集进行测试。因此，从行 的角度看，可以得知该行数据集的泛化性。每列数据 表示在对应行数据集上进行训练后，再对列上数据 集上进行测试，因此，从列的角度分析，可知该列数 据集的难度。请注意，训练和测试的设置与表. 3中 使用的设置不同。因此性能无法相互比较。正如预 期，本文的 COD10K 是难度最大的数据集 (即，最 后一行的其他平均为: 0.589)。这是因为数据集包 含了各种具有挑战性的伪装物体 (见\equref{equ:PDC_refresh})。
-\mypara{定性分析}图. 9给出了本文$SINet$模型与两个基准模型之间的定性比较。观察发现，PFANet[79]虽然 定位到伪装物体，但是输出总是不准确。通过进一步使用边缘特征，EGNet[78]获得了比PFANet相对更准确的定位。然而，它仍然忽略了物体的细微之处，尤其是第一行的鱼类。所有这些具有挑战的示例 (例如，边缘不确定，遮挡和小物体)，SINet 模 型均可检测出伪装物体的精确细节从而预测出真正 伪装物体，展示了本文框架的稳健性。
+\tabref{tab:S_measure_result}提供了在跨数据集上使用 S 测评法 (S-
+measure) 的结果。每行数据表示用这一行的数据集训练，再对各个列中的数据集进行测试。因此，从行的角度看，可以得知该行数据集的泛化性。每列数据 表示在对应行数据集上进行训练后，再对列上数据集上进行测试，因此，从列的角度分析，可知该列数据集的难度。请注意，训练和测试的设置与表. 3中 使用的设置不同。因此性能无法相互比较。正如预期，本文的 COD10K 是难度最大的数据集(即，最后一行的其他平均为:0.589)。这是因为数据集包含了各种具有挑战性的伪装物体(见\secref{sec:Our_Dataset})。
+\mypara{定性分析}\figref{fig:Comparesion_SINet_EGNet_PFANet}给出了本文$SINet$模型与两个基准模型之间的定性比较。观察发现，PFANet[79]虽然 定位到伪装物体，但是输出总是不准确。通过进一步使用边缘特征，EGNet[78]获得了比PFANet相对更准确的定位。然而，它仍然忽略了物体的细微之处，尤其是第一行的鱼类。所有这些具有挑战的示例(例如，边缘不确定，遮挡和小物体)，$SINet$模型均可检测出伪装物体的精确细节从而预测出真正 伪装物体，展示了本文框架的稳健性。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[tp]
+    \centering
+    \includegraphics[width=\columnwidth]{COD_Zh_translate/figures/More_Application.png}\small
+    \caption{更多应用示例。(a) 息肉检测/分割结果。(b) 用于灾 区的搜救系统。}
+    \label{fig:More_Application}
+\end{figure}
+
 \section{潜在应用}\label{sec:Application_to_be_found}
+伪装检测系统(Camouflage Detection Systems,CDS)
+有许多潜在的应用。本文在此预想了两种潜在用途。
+\mypara{医学图像分割}配备了CDS的医疗图像分割算法，用息肉等特殊对象训练后，则可以用于在真实场景中自动分割息肉
+(\figref{fig:More_Application} a)，
+或者在自然界中发现和保护稀有物种，甚至在灾难场景中用于搜索和救援。 
+\mypara{搜索引擎}\figref{fig:Application_SearchEngin}是一个谷歌的搜索结果示例。从结果(\figref{fig:Application_SearchEngin} a) 中，可以注意到搜索引擎无法检测到隐藏的蝴蝶，因此只能搜索到具有相似背景的图像。有趣的是，当搜索引擎配备了CDS(在此，只是简单地修改了关键字)，引擎就可以识别伪装物体，并且反馈一些蝴蝶的图像
+(\figref{fig:Application_SearchEngin} b)。
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
+\\
 
 \section{结论}\label{sec:Conclusion}
+本文从伪装角度为物体检测构建了一个完整的评测。具体来说，本文构建了一个新的、有挑战性的、稠密标注的COD10K数据集，并进行了大规模的评估，开发了一个简单而有效的端到端$SINet$框架，并展示了一些潜在应用。与目前先进基准模型相比，$SINet$框架极具竞争力，并且在视觉上能够得到更好的结果。以上贡献旨在为本领域提供一个为COD任务设计新模型的机会。在未来的工作中，我们计划扩展COD10K数据集，可提供各种形式的输入，例如RGB-D伪装物体检测(类似于RGB-D显着物体检测[20,72,75])，或者其他形式。探索一些新技术，例如弱监督学习[54,55]、零样本学习[84]、变分自动编码模型[85]和多尺度骨干网络 [21]。
 
+\begin{figure}[tp]
+    \centering
+    \includegraphics[width=\columnwidth]{COD_Zh_translate/figures/Application_SearchEngin.png}\small
+    \caption{配备 CDS 与否的搜索引擎示例，(a):无 CDS，(b)
+    有 CDS。}
+    \label{fig:Application_SearchEngin}
+\end{figure}
 
 
 %引文我就只能意思一下了,COD原文引用太多了，我这边随便找齐了百多篇放到了bib里面，然后到时候我只能说随便引了，最后用goodnotes弄一下pdf
